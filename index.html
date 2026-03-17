@@ -707,7 +707,6 @@ function renderQuestion() {
     }).join('');
 
     document.getElementById('question-card').innerHTML = `
-        <div class="question-label">${q.label}</div>
         <p class="question-text">${q.text}</p>
         <ul class="options-list">${optionsHTML}</ul>
     `;

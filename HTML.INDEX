@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌪️ Desafíos en el Entorno VUCA</title>
+    <meta property="og:title" content="Quiz: Desafíos en el Entorno VUCA">
+    <meta property="og:description" content="Volatilidad, Incertidumbre, Complejidad y Ambigüedad — Gestión de Relaciones Organizacionales">
+    <meta property="og:type" content="sitio-web">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --bg-light: #f8f9ff;
+            --card-shadow: 0 8px 32px rgba(102,126,234,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ── CONFETTI ── */
+        #confetti-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            top: -10px;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            opacity: 0.9;
+            animation: confetti-fall linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ── CONTAINER ── */
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 36px 30px 28px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.88;
+            letter-spacing: 0.3px;
+        }
+
+        .vuca-badges {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .vuca-badge {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── TOP BAR ── */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 30px;
+            background: white;
+            border-bottom: 1px solid #eef0f8;
+        }
+
+        .question-pill {
+            background: #eaf2fb;
+            padding: 7px 16px;
+            border-radius: 20px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .score-pill {
+            background: #eafaf1;
+            padding: 7px 16px;
+            border-radius: 20px;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: 1px solid var(--success);
+        }
+
+        /* ── PROGRESS BAR ── */
+        .progress-container {
+            width: 100%;
+            height: 7px;
+            background: #e8ecf8;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.5s ease;
+        }
+
+        /* ── CONTENT ── */
+        .content {
+            padding: 30px;
+            flex: 1;
+        }
+
+        /* ── QUESTION CARD ── */
+        .question-card {
+            animation: fadeIn 0.4s ease;
+        }
+
+        .question-label {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.08rem;
+            font-weight: 600;
+            line-height: 1.65;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        /* ── OPTIONS ── */
+        .options-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 18px;
+            border: 2px solid #e8ecf8;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.22s ease;
+            background: white;
+            user-select: none;
+        }
+
+        .option-item:hover:not(.disabled) {
+            border-color: var(--primary);
+            background: #f5f7ff;
+            transform: translateX(3px);
+        }
+
+        .option-letter {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #eef0f8;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.22s ease;
+        }
+
+        .option-text {
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: var(--text-primary);
+            padding-top: 3px;
+        }
+
+        /* Estados de respuesta */
+        .option-item.correct {
+            border-color: var(--success);
+            background: #eafaf1;
+            animation: pulseGreen 0.5s ease;
+        }
+
+        .option-item.correct .option-letter {
+            background: var(--success);
+            color: white;
+        }
+
+        .option-item.incorrect {
+            border-color: var(--danger);
+            background: #fdf2f2;
+            animation: shake 0.4s ease;
+        }
+
+        .option-item.incorrect .option-letter {
+            background: var(--danger);
+            color: white;
+        }
+
+        .option-item.reveal {
+            border-color: var(--success);
+            background: #eafaf1;
+            opacity: 0.85;
+        }
+
+        .option-item.reveal .option-letter {
+            background: var(--success);
+            color: white;
+        }
+
+        .option-item.disabled { cursor: default; }
+
+        /* ── CORRECT ANSWER DISPLAY ── */
+        .correct-answer-display {
+            display: none;
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: #eafaf1;
+            border: 1px solid #a8d5b8;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            color: #1e8449;
+            font-weight: 600;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .correct-answer-display.visible { display: flex; align-items: center; gap: 8px; }
+
+        /* ── FEEDBACK ── */
+        .feedback-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px 22px;
+            border-radius: var(--radius-sm);
+            font-size: 0.93rem;
+            line-height: 1.7;
+            animation: slideIn 0.35s ease;
+        }
+
+        .feedback-box.correct-fb {
+            background: linear-gradient(135deg, #eafaf1 0%, #d5f5e3 100%);
+            border-left: 4px solid var(--success);
+        }
+
+        .feedback-box.incorrect-fb {
+            background: linear-gradient(135deg, #fdf2f2 0%, #fadbd8 100%);
+            border-left: 4px solid var(--danger);
+        }
+
+        .feedback-box.visible { display: block; }
+
+        .feedback-box strong { display: block; margin-bottom: 8px; font-size: 1rem; }
+
+        .theory-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 12px;
+            background: rgba(102,126,234,0.1);
+            border: 1px solid rgba(102,126,234,0.25);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* ── NEXT BUTTON ── */
+        .btn-next {
+            display: none;
+            margin-top: 24px;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-next:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-next.visible { display: block; animation: fadeIn 0.3s ease; }
+
+        /* ── RESULTS ── */
+        .results-panel {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .results-panel.visible { display: block; }
+
+        .results-header {
+            text-align: center;
+            padding: 10px 0 28px;
+        }
+
+        .results-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .score-badge {
+            display: inline-block;
+            font-size: 3.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 10px 0;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 8px 22px;
+            border-radius: 24px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        .level-exceptional { background: #fef9e7; color: #b7950b; border: 2px solid #f39c12; }
+        .level-good       { background: #eafaf1; color: #1e8449; border: 2px solid #27ae60; }
+        .level-regular    { background: #eaf2fb; color: #1a5276; border: 2px solid #2980b9; }
+        .level-start      { background: #fdf2f2; color: #922b21; border: 2px solid #e74c3c; }
+
+        .result-message {
+            font-size: 0.97rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-top: 14px;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        /* ── REVIEW TABLE ── */
+        .review-section {
+            margin-top: 28px;
+        }
+
+        .review-section h3 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eef0f8;
+        }
+
+        .review-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+        }
+
+        .review-item.r-correct { background: #eafaf1; }
+        .review-item.r-incorrect { background: #fdf2f2; }
+
+        .review-icon { font-size: 1.1rem; flex-shrink: 0; }
+        .review-q { font-weight: 600; color: var(--text-primary); }
+        .review-pts { margin-left: auto; font-weight: 700; flex-shrink: 0; }
+        .review-pts.pts-ok { color: var(--success); }
+        .review-pts.pts-no { color: var(--danger); }
+
+        /* ── RETRY BUTTON ── */
+        .btn-retry {
+            display: block;
+            width: 100%;
+            margin-top: 24px;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-retry:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* ── FOOTER ── */
+        .footer {
+            text-align: center;
+            padding: 18px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            border-top: 1px solid #eef0f8;
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeIn  { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulseGreen { 0%,100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.3); } 50% { box-shadow: 0 0 0 8px rgba(39,174,96,0); } }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5rem; }
+            .content { padding: 20px 18px; }
+            .top-bar { padding: 12px 18px; }
+            .question-text { font-size: 0.98rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="confetti-container"></div>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>🌪️ Desafíos en el Entorno VUCA</h1>
+        <p>Gestión de las Relaciones en las Organizaciones — IPAE</p>
+        <div class="vuca-badges">
+            <span class="vuca-badge">V · Volatilidad</span>
+            <span class="vuca-badge">U · Incertidumbre</span>
+            <span class="vuca-badge">C · Complejidad</span>
+            <span class="vuca-badge">A · Ambigüedad</span>
+        </div>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <span class="question-pill" id="question-counter">Pregunta 1 de 5</span>
+        <span class="score-pill" id="score-display">🏆 0 pts</span>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-container">
+        <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- QUIZ PANEL -->
+        <div id="quiz-panel">
+            <div class="question-card" id="question-card">
+                <!-- Renderizado por JS -->
+            </div>
+
+            <div class="correct-answer-display" id="correct-answer-display"></div>
+            <div class="feedback-box" id="feedback-box"></div>
+            <button class="btn-next" id="btn-next" onclick="nextQuestion()">Siguiente pregunta →</button>
+        </div>
+
+        <!-- RESULTS PANEL -->
+        <div class="results-panel" id="results-panel">
+            <div class="results-header">
+                <h2>📊 Resultados del Quiz</h2>
+                <div class="score-badge" id="final-score">0/5</div>
+                <div id="level-badge"></div>
+                <p class="result-message" id="result-message"></p>
+            </div>
+
+            <div class="review-section">
+                <h3>📋 Revisión de Respuestas</h3>
+                <div id="review-list"></div>
+            </div>
+
+            <button class="btn-retry" onclick="resetQuiz()">🔄 Volver a intentar</button>
+        </div>
+
+    </div><!-- /content -->
+
+    <div class="footer">
+        Gestión de las Relaciones en las Organizaciones · Hersey &amp; Blanchard · VUCA
+    </div>
+
+</div><!-- /container -->
+
+<script>
+/* ══════════════════════════════════════════
+   BANCO DE PREGUNTAS — 5 PREGUNTAS VUCA
+   Feedback conectado con Hersey & Blanchard
+══════════════════════════════════════════ */
+
+const questions = [
+    /* ────────────────────────────────────────
+       P1: VOLATILIDAD — Situación concreta
+    ─────────────────────────────────────────*/
+    {
+        id: 1,
+        label: "Volatilidad · V",
+        text: "Una empresa de transporte enfrenta cambios diarios e impredecibles en el precio del combustible debido a conflictos geopolíticos. El gerente no sabe si mañana el costo subirá un 5 % o bajará un 12 %. ¿Qué dimensión VUCA predomina y cuál debe ser la respuesta del administrador?",
+        options: [
+            "Incertidumbre — Esperar a que el precio se estabilice antes de decidir.",
+            "Volatilidad — Desarrollar agilidad operativa y planes de contingencia inmediatos.",
+            "Ambigüedad — Encargar un estudio de mercado de largo plazo.",
+            "Complejidad — Reunir a todos los gerentes para analizar el entorno juntos."
+        ],
+        correct: 1,
+        feedbackCorrect: `<strong>✅ ¡Correcto! Identificaste la Volatilidad y la respuesta adecuada.</strong>
+La volatilidad implica cambios rápidos y frecuentes cuya magnitud resulta impredecible. El antídoto no es la predicción, sino la <em>agilidad</em>: contar con planes de contingencia activables de inmediato (contratos de precio fijo, rutas alternativas, fondos de reserva).<br><br>
+Un administrador efectivo en este escenario <em>dirige con claridad</em> las acciones de contingencia y al mismo tiempo <em>empodera a los equipos operativos</em> para tomar decisiones rápidas sin esperar aprobación centralizada. El estilo de liderazgo debe adaptarse al nivel de madurez de cada equipo: mayor autonomía a quienes ya dominan el proceso, mayor dirección a quienes están aprendiendo. La velocidad de respuesta —no la predicción— es la competencia crítica en entornos volátiles.`,
+        feedbackIncorrect: `<strong>❌ Recuerda: el cambio rápido y frecuente define la Volatilidad.</strong>
+Cuando el precio del combustible oscila a diario, el error estratégico es <em>esperar</em> o encargar estudios de largo plazo. El tiempo de inacción tiene costo directo en rentabilidad.<br><br>
+Ante alta volatilidad, el administrador debe indicar con precisión qué medidas de contingencia activar (precio fijo de proveedores, rutas de menor consumo, reservas de liquidez) y luego delegar la ejecución a los equipos con mayor experiencia en cada área. La clave está en calibrar cuánto dirigir y cuánto soltar según la capacidad real de cada persona: esa adaptabilidad del liderazgo es lo que protege el negocio cuando el entorno no da tregua.`
+    },
+
+    /* ────────────────────────────────────────
+       P2: INCERTIDUMBRE — Conceptual aplicada
+    ─────────────────────────────────────────*/
+    {
+        id: 2,
+        label: "Incertidumbre · U",
+        text: "Vas a lanzar un producto innovador en el mercado, pero no existen datos históricos ni competidores similares para prever la reacción del cliente. Nadie en la empresa tiene experiencia previa en esta categoría. ¿Cómo debe actuar el administrador ante esta Incertidumbre?",
+        options: [
+            "Cancelar el proyecto porque sin certezas el riesgo es inaceptable.",
+            "Lanzar el producto de forma masiva asumiendo el riesgo completo desde el inicio.",
+            "Invertir en investigación de usuarios, prototipos y recolección progresiva de información.",
+            "Delegar la decisión al área de finanzas para evaluar el retorno esperado."
+        ],
+        correct: 2,
+        feedbackCorrect: `<strong>✅ ¡Exacto! La Incertidumbre se gestiona transformando lo desconocido en datos.</strong>
+Cuando no existen precedentes, la estrategia correcta es <em>reducir la ignorancia</em> de forma progresiva: prototipos de bajo costo, entrevistas con usuarios tempranos, pilotos controlados. Cada dato recopilado reduce el espacio de riesgo.<br><br>
+En este escenario, el administrador actúa como <em>orientador del aprendizaje colectivo</em>: no impone la respuesta porque no la tiene, sino que conduce al equipo a construir conocimiento paso a paso. Reconocer qué se sabe y qué no, y actuar en consecuencia, es una de las competencias más valiosas de la gestión moderna. La información no elimina el riesgo, pero lo hace manejable.`,
+        feedbackIncorrect: `<strong>❌ Ante la falta de precedentes, la clave es generar información antes de comprometer recursos.</strong>
+Cancelar el proyecto elimina la oportunidad. Lanzar de forma masiva sin datos equivale a apostar. La respuesta correcta ante la Incertidumbre es <em>prototipar e investigar</em>.<br><br>
+El administrador debe guiar al equipo para construir conocimiento progresivo sobre el mercado —encuestas, pruebas piloto, focus groups— antes de tomar decisiones costosas e irreversibles. Esta forma de liderar reconoce que el conocimiento se construye en la práctica, no solo en el análisis previo. Reducir la ignorancia es, en el fondo, la forma más concreta de gestionar el riesgo.`
+    },
+
+    /* ────────────────────────────────────────
+       P3: COMPLEJIDAD — Situación concreta
+    ─────────────────────────────────────────*/
+    {
+        id: 3,
+        label: "Complejidad · C",
+        text: "Gestionar la cadena de suministro global de una empresa implica coordinar simultáneamente regulaciones de 10 países, fluctuaciones de tipos de cambio, diferentes proveedores y logística multimodal. Cuando se retrasa un embarque en Asia, los efectos se sienten en tres continentes. ¿Cuál es el reto central que enfrenta el administrador?",
+        options: [
+            "La falta de claridad en las instrucciones internas de la empresa.",
+            "Que los precios de los insumos suben y bajan con demasiada rapidez.",
+            "La interconectividad de múltiples variables que se afectan mutuamente.",
+            "La ausencia de datos históricos para prever el comportamiento del mercado."
+        ],
+        correct: 2,
+        feedbackCorrect: `<strong>✅ ¡Muy bien! Has identificado el rasgo esencial de la Complejidad.</strong>
+La Complejidad no significa "dificultad" sino <em>multiplicidad de factores interconectados</em>: mover una pieza afecta a todas las demás. En cadenas globales, una demora en Shanghai repercute en plantas en México y clientes en Europa.<br><br>
+En este tipo de entorno, el administrador necesita <em>involucrar a especialistas de diferentes áreas</em> para mapear las interdependencias y tomar decisiones informadas de manera colectiva. Un buen gestor no necesita saberlo todo, pero sí sabe <em>quién sabe qué</em> y cómo integrar ese conocimiento para no perder el control del sistema. La coordinación entre equipos —más que el conocimiento individual— es la ventaja competitiva real ante la complejidad.`,
+        feedbackIncorrect: `<strong>❌ La Complejidad es la multiplicidad de factores relacionados entre sí, no la rapidez del cambio ni la falta de claridad.</strong>
+En una cadena global, el problema no es que las instrucciones sean confusas ni que los precios varíen rápido (eso sería Volatilidad). El desafío es que <em>todo está conectado</em>: regulaciones, divisas, proveedores y logística forman un sistema donde una variable perturba a todas las demás.<br><br>
+El administrador necesita crear equipos multifuncionales que mapeen esas interdependencias y simplifiquen los procesos clave. Saber delegar en expertos de cada área, integrar sus perspectivas y traducirlas en decisiones coherentes es precisamente la habilidad directiva que marca la diferencia en escenarios de alta complejidad.`
+    },
+
+    /* ────────────────────────────────────────
+       P4: AMBIGÜEDAD — Identificación
+    ─────────────────────────────────────────*/
+    {
+        id: 4,
+        label: "Ambigüedad · A",
+        text: "Una campaña de marketing genera un aumento del 40 % en visitas al sitio web, pero las ventas caen un 15 % en el mismo período. El equipo directivo debate durante semanas sin ponerse de acuerdo en la causa. Unos culpan al precio, otros al producto, otros al proceso de compra. ¿Qué dimensión VUCA describe mejor esta situación?",
+        options: [
+            "Complejidad, porque hay muchas variables simultáneas que analizar.",
+            "Volatilidad, porque los indicadores cambian de semana en semana.",
+            "Ambigüedad, porque la relación causa-efecto no resulta clara para nadie.",
+            "Incertidumbre, porque la empresa no tiene datos suficientes del mercado."
+        ],
+        correct: 2,
+        feedbackCorrect: `<strong>✅ ¡Correcto! Esta situación describe con precisión la Ambigüedad.</strong>
+La Ambigüedad se distingue de las otras dimensiones VUCA porque el problema no es la velocidad del cambio, ni la falta de datos, ni la cantidad de variables: es que la <em>relación causa-efecto no está clara</em> aunque los datos existan y estén disponibles.<br><br>
+Ante la Ambigüedad, el administrador efectivo <em>construye hipótesis y las pone a prueba</em>: asigna la responsabilidad de experimentar a personas con autonomía y criterio, aprende de los resultados y ajusta. Esta mentalidad experimental —probar en pequeña escala antes de comprometer recursos— es la que convierte la confusión en aprendizaje organizacional. La claridad no llega sola: se construye con método y tolerancia a la incertidumbre del proceso.`,
+        feedbackIncorrect: `<strong>❌ Cuando la confusión está en el "por qué" de las cosas, se trata de Ambigüedad.</strong>
+La Complejidad implicaría variables claramente identificadas pero interconectadas. La Volatilidad sería un cambio rápido en los indicadores. La Incertidumbre sería ausencia de datos. Pero aquí <em>los datos existen</em> y aún así nadie entiende la causa del problema: eso es Ambigüedad pura.<br><br>
+La respuesta correcta es diseñar experimentos concretos: proponer hipótesis específicas ("¿es el precio?", "¿es el proceso de compra?") y asignar a equipos capaces la tarea de probarlas con pruebas controladas o análisis focalizados. Reducir la confusión paso a paso, con método, es la competencia directiva más valiosa ante la Ambigüedad.`
+    },
+
+    /* ────────────────────────────────────────
+       P5: PROPÓSITO PROFESIONAL — Prescripción
+    ─────────────────────────────────────────*/
+    {
+        id: 5,
+        label: "Liderazgo en VUCA",
+        text: "Para garantizar el éxito de la estrategia comercial de su empresa en un mundo VUCA, un Administrador con visión de futuro debe principalmente:",
+        options: [
+            "Diseñar planes anuales detallados y rígidos para evitar la improvisación.",
+            "Adoptar un liderazgo adaptativo basado en una visión clara de propósito organizacional.",
+            "Delegar todas las decisiones difíciles a los niveles operativos para mayor agilidad.",
+            "Enfocarse exclusivamente en los indicadores financieros de corto plazo."
+        ],
+        correct: 1,
+        feedbackCorrect: `<strong>✅ ¡Excelente! Has descrito el perfil del administrador que lidera en entornos VUCA.</strong>
+Los planes rígidos se quiebran ante la volatilidad. La delegación total sin visión genera incoherencia. El foco exclusivo en el corto plazo destruye valor futuro. Lo que distingue al administrador eficaz en entornos VUCA es tener una <em>visión firme de propósito</em> como ancla estable, mientras la estrategia se adapta con flexibilidad al contexto cambiante.<br><br>
+El modelo de <strong>Hersey &amp; Blanchard</strong> cierra aquí con una síntesis fundamental: no existe un único estilo de liderazgo óptimo. El administrador VUCA <em>adapta su estilo</em> según la madurez de cada equipo y la naturaleza de cada desafío (directivo ante Volatilidad, coach ante Incertidumbre, participativo ante Complejidad, delegador ante Ambigüedad), manteniendo siempre el propósito como norte estratégico. Esa combinación de flexibilidad táctica y firmeza de propósito es tu ventaja competitiva como futuro administrador.
+<span class="theory-tag">📚 Hersey &amp; Blanchard — Liderazgo Situacional</span>`,
+        feedbackIncorrect: `<strong>❌ ¡Atención! En el entorno actual, la rigidez y la visión de corto plazo son las grandes trampas.</strong>
+Los planes rígidos no sobreviven a la Volatilidad. Delegar sin visión genera equipos sin rumbo. Mirar solo los números del trimestre sacrifica la sostenibilidad. Lo que integra todo es el <em>liderazgo adaptativo con propósito</em>.<br><br>
+<strong>Hersey &amp; Blanchard</strong> enseñan que la madurez del liderazgo consiste precisamente en esto: saber <em>cuándo</em> dirigir, <em>cuándo</em> entrenar, <em>cuándo</em> participar y <em>cuándo</em> delegar, todo ello guiado por una visión clara de hacia dónde va la organización. Esa adaptabilidad estratégica, y no la rigidez, es lo que hace destacar a los mejores administradores en mercados turbulentos.
+<span class="theory-tag">📚 Hersey &amp; Blanchard — Liderazgo Situacional</span>`
+    }
+];
+
+/* ══════════════════════════════════════
+   ESTADO GLOBAL
+══════════════════════════════════════ */
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+let userAnswers = new Array(questions.length).fill(null);
+let userScores  = new Array(questions.length).fill(0);
+const totalQ = questions.length;
+
+/* ══════════════════════════════════════
+   CONFETTI
+══════════════════════════════════════ */
+function launchConfetti(count = 60) {
+    const container = document.getElementById('confetti-container');
+    const colors = ['#667eea','#764ba2','#f39c12','#27ae60','#e74c3c','#17a2b8','#fd79a8','#00b894'];
+    for (let i = 0; i < count; i++) {
+        const c = document.createElement('div');
+        c.classList.add('confetti');
+        c.style.left = Math.random() * 100 + '%';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.width  = (Math.random() * 8 + 7) + 'px';
+        c.style.height = (Math.random() * 8 + 7) + 'px';
+        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        c.style.animationDelay    = Math.random() * 0.5 + 's';
+        c.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+        container.appendChild(c);
+        setTimeout(() => c.remove(), 4000);
+    }
+}
+
+/* ══════════════════════════════════════
+   PROGRESS
+══════════════════════════════════════ */
+function updateProgress() {
+    const pct = (currentQuestion / totalQ) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('question-counter').textContent = `Pregunta ${currentQuestion + 1} de ${totalQ}`;
+    document.getElementById('score-display').textContent = `🏆 ${score} pts`;
+}
+
+/* ══════════════════════════════════════
+   RENDER QUESTION
+══════════════════════════════════════ */
+function renderQuestion() {
+    const q = questions[currentQuestion];
+    answered = (userAnswers[currentQuestion] !== null);
+
+    const optionsHTML = q.options.map((opt, i) => {
+        const letters = ['A','B','C','D'];
+        let cls = 'option-item';
+        if (answered) {
+            cls += ' disabled';
+            if (i === q.correct)          cls += ' reveal';
+            if (i === userAnswers[currentQuestion] && i !== q.correct) cls += ' incorrect';
+            if (i === userAnswers[currentQuestion] && i === q.correct) cls = 'option-item disabled correct';
+        }
+        return `
+        <li class="${cls}" onclick="selectAnswer(${i})">
+            <span class="option-letter">${letters[i]}</span>
+            <span class="option-text">${opt}</span>
+        </li>`;
+    }).join('');
+
+    document.getElementById('question-card').innerHTML = `
+        <div class="question-label">${q.label}</div>
+        <p class="question-text">${q.text}</p>
+        <ul class="options-list">${optionsHTML}</ul>
+    `;
+
+    // Restore feedback if re-rendering
+    const fbBox = document.getElementById('feedback-box');
+    const caDisplay = document.getElementById('correct-answer-display');
+    const btnNext = document.getElementById('btn-next');
+
+    if (answered) {
+        const wasCorrect = (userAnswers[currentQuestion] === q.correct);
+        fbBox.innerHTML = wasCorrect ? q.feedbackCorrect : q.feedbackIncorrect;
+        fbBox.className = 'feedback-box visible ' + (wasCorrect ? 'correct-fb' : 'incorrect-fb');
+
+        if (!wasCorrect) {
+            const letters = ['A','B','C','D'];
+            caDisplay.innerHTML = `✅ Respuesta correcta: <strong>${letters[q.correct]}. ${q.options[q.correct]}</strong>`;
+            caDisplay.className = 'correct-answer-display visible';
+        } else {
+            caDisplay.className = 'correct-answer-display';
+        }
+
+        btnNext.className = 'btn-next visible';
+        btnNext.textContent = currentQuestion < totalQ - 1 ? 'Siguiente pregunta →' : 'Ver resultados →';
+    } else {
+        fbBox.className = 'feedback-box';
+        caDisplay.className = 'correct-answer-display';
+        btnNext.className = 'btn-next';
+    }
+}
+
+/* ══════════════════════════════════════
+   SELECT ANSWER
+══════════════════════════════════════ */
+function selectAnswer(selectedIndex) {
+    if (answered) return;
+    answered = true;
+
+    const q = questions[currentQuestion];
+    const isCorrect = selectedIndex === q.correct;
+    userAnswers[currentQuestion] = selectedIndex;
+
+    if (isCorrect) {
+        userScores[currentQuestion] = 1;
+        score++;
+        launchConfetti();
+    }
+
+    // Highlight options
+    const items = document.querySelectorAll('.option-item');
+    items.forEach((item, i) => {
+        item.classList.add('disabled');
+        if (i === q.correct) item.classList.add(i === selectedIndex ? 'correct' : 'reveal');
+        if (i === selectedIndex && !isCorrect) item.classList.add('incorrect');
+    });
+
+    // Feedback
+    const fbBox = document.getElementById('feedback-box');
+    fbBox.innerHTML = isCorrect ? q.feedbackCorrect : q.feedbackIncorrect;
+    fbBox.className = 'feedback-box visible ' + (isCorrect ? 'correct-fb' : 'incorrect-fb');
+
+    // Correct answer display
+    const caDisplay = document.getElementById('correct-answer-display');
+    if (!isCorrect) {
+        const letters = ['A','B','C','D'];
+        caDisplay.innerHTML = `✅ Respuesta correcta: <strong>${letters[q.correct]}. ${q.options[q.correct]}</strong>`;
+        caDisplay.className = 'correct-answer-display visible';
+    }
+
+    // Next button
+    const btnNext = document.getElementById('btn-next');
+    btnNext.className = 'btn-next visible';
+    btnNext.textContent = currentQuestion < totalQ - 1 ? 'Siguiente pregunta →' : 'Ver resultados →';
+
+    // Update score display
+    document.getElementById('score-display').textContent = `🏆 ${score} pts`;
+}
+
+/* ══════════════════════════════════════
+   NEXT QUESTION
+══════════════════════════════════════ */
+function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < totalQ) {
+        updateProgress();
+        renderQuestion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        showResults();
+    }
+}
+
+/* ══════════════════════════════════════
+   SHOW RESULTS
+══════════════════════════════════════ */
+function showResults() {
+    document.getElementById('quiz-panel').style.display = 'none';
+    const panel = document.getElementById('results-panel');
+    panel.className = 'results-panel visible';
+
+    const pct = (score / totalQ) * 100;
+
+    // Progress bar to 100%
+    document.getElementById('progress-bar').style.width = '100%';
+    document.getElementById('question-counter').textContent = `Quiz completado`;
+    document.getElementById('score-display').textContent = `🏆 ${score} pts`;
+
+    // Score
+    document.getElementById('final-score').textContent = `${score} / ${totalQ}`;
+
+    // Level
+    let level, levelClass, msg;
+    if (pct === 100) {
+        level = '🏆 Dominio Excepcional'; levelClass = 'level-exceptional';
+        msg = '¡Resultado perfecto! Identificas con precisión las cuatro dimensiones VUCA y comprendes cómo el liderazgo adaptativo de Hersey &amp; Blanchard responde a cada una. Estás listo para aplicar este marco en situaciones organizacionales reales.';
+        launchConfetti(100);
+    } else if (pct >= 80) {
+        level = '🎯 Muy Buen Desempeño'; levelClass = 'level-good';
+        msg = 'Dominas la mayoría de los conceptos VUCA y su conexión con el liderazgo situacional. Repasa el feedback de las preguntas incorrectas para afinar tu comprensión de las dimensiones más sutiles como la Ambigüedad.';
+    } else if (pct >= 60) {
+        level = '📘 En Desarrollo'; levelClass = 'level-regular';
+        msg = 'Vas por buen camino. Tienes una base sólida en algunos conceptos, pero es importante reforzar la diferencia entre Complejidad, Ambigüedad e Incertidumbre. Lee el feedback de cada pregunta y vuelve a intentarlo.';
+    } else {
+        level = '💪 Momento de Reforzar'; levelClass = 'level-start';
+        msg = 'El entorno VUCA tiene matices importantes que vale la pena profundizar. Revisa el feedback de cada pregunta con calma, presta especial atención a las diferencias entre cada dimensión y a la respuesta que propone el Liderazgo Situacional. ¡Puedes lograrlo!';
+    }
+
+    const badge = document.getElementById('level-badge');
+    badge.className = 'level-badge ' + levelClass;
+    badge.textContent = level;
+    document.getElementById('result-message').innerHTML = msg;
+
+    // Review list
+    const labels = ['Volatilidad (V)','Incertidumbre (U)','Complejidad (C)','Ambigüedad (A)','Liderazgo VUCA'];
+    const letters = ['A','B','C','D'];
+    let reviewHTML = '';
+    questions.forEach((q, i) => {
+        const ok = userAnswers[i] === q.correct;
+        reviewHTML += `
+        <div class="review-item ${ok ? 'r-correct' : 'r-incorrect'}">
+            <span class="review-icon">${ok ? '✅' : '❌'}</span>
+            <span class="review-q">P${i+1}: ${labels[i]}</span>
+            <span class="review-pts ${ok ? 'pts-ok' : 'pts-no'}">${ok ? '+1 pt' : '0 pt'}</span>
+        </div>`;
+    });
+    document.getElementById('review-list').innerHTML = reviewHTML;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ══════════════════════════════════════
+   RESET QUIZ
+══════════════════════════════════════ */
+function resetQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    answered = false;
+    userAnswers = new Array(totalQ).fill(null);
+    userScores  = new Array(totalQ).fill(0);
+
+    document.getElementById('quiz-panel').style.display = 'block';
+    document.getElementById('results-panel').className = 'results-panel';
+    document.getElementById('progress-bar').style.width = '0%';
+
+    updateProgress();
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+updateProgress();
+renderQuestion();
+</script>
+</body>
+</html>
